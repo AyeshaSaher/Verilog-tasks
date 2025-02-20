@@ -1,0 +1,69 @@
+
+
+// DESIGN FILE  
+// Code your design here
+
+module multimedia (M, L, F);
+	output M; 
+	input L;
+	input F;
+	// Gate level model
+	and a1 (M, L, F); 
+endmodule
+
+//TESTBENCH FILE 
+// Code your testbench here
+// or browse Examples
+`timescale 1ns / 1ps
+
+module tb_multimedia;
+
+    // Inputs
+    reg L;
+    reg F;
+
+    // Output
+    wire M;
+
+    // Instantiate the multimedia module
+    multimedia uut (
+        .M(M),
+        .L(L),
+        .F(F)
+    );
+
+    initial begin
+        // Initialize inputs
+        L = 0; F = 0;
+        #10; // Wait for 10 time units
+
+        // Test case 1
+        L = 0; F = 0;
+        #10; // Wait for 10 time units
+        
+        // Test case 2
+        L = 0; F = 1;
+        #10; // Wait for 10 time units
+        
+        // Test case 3
+        L = 1; F = 0;
+        #10; // Wait for 10 time units
+        
+        // Test case 4
+        L = 1; F = 1;
+        #10; // Wait for 10 time units
+        
+        // Finish simulation
+        $finish;
+    end
+
+    initial begin
+        // Monitor the outputs
+        $monitor("Time: %0t | L: %b | F: %b | M: %b", $time, L, F, M);
+    end
+
+endmodule
+
+
+
+https://www.edaplayground.com/x/QadU
