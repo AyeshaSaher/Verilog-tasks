@@ -1,0 +1,45 @@
+// Testbench
+module testbench;
+    reg clk;
+    reg reset;
+    wire [2:0] sync_counter_out;
+    wire [2:0] async_counter_out;
+
+    // Instantiate the synchronous counter
+    sync_counter my_sync_counter (
+        .clk(clk),
+        .reset(reset),
+        .counter(sync_counter_out)
+    );
+
+    // Instantiate the asynchronous counter
+    async_counter my_async_counter (
+        .clk(clk),
+        .reset(reset),
+        .counter(async_counter_out)
+    );
+
+    initial begin
+        // Initialize signals
+        clk = 0;
+        reset = 0;
+
+        // Dump file for waveform
+        $dumpfile("dump.vcd");
+        $dumpvars(0, testbench);
+
+        // Test Synchronous Reset
+        #5 reset = 1; // Activate reset
+        #5 reset = 0; // Deactivate reset
+
+        // Generate clock
+        forever #10 clk = ~clk; // Change clock period to reduce output frequency
+    end
+
+    initial begin
+        // Monitor outputs for a limited time
+        $monitor("Time: %0t | Sync Counter: %b | Async Counter: %b", $time, sync_counter_out, async_counter_out);
+        #100; // Run the simulation for a limited time
+        $finish; // End the simulation
+    end
+endmodule
