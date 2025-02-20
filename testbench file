@@ -1,45 +1,107 @@
-// Testbench
-module testbench;
-    reg clk;
-    reg reset;
-    wire [2:0] sync_counter_out;
-    wire [2:0] async_counter_out;
+// Code your design here
+module blocking_nonblocking_example (
+    input logic a,    // Input signal a
+    input logic b,    // Input signal b
+    input logic clk,  // Clock signal for the non-blocking part
+    input logic d,    // Data input for the non-blocking part
+    output logic y,   // Output signal for the blocking part
+    output logic q    // Output signal for the non-blocking part
+);
 
-    // Instantiate the synchronous counter
-    sync_counter my_sync_counter (
-        .clk(clk),
-        .reset(reset),
-        .counter(sync_counter_out)
-    );
-
-    // Instantiate the asynchronous counter
-    async_counter my_async_counter (
-        .clk(clk),
-        .reset(reset),
-        .counter(async_counter_out)
-    );
-
-    initial begin
-        // Initialize signals
-        clk = 0;
-        reset = 0;
-
-        // Dump file for waveform
-        $dumpfile("dump.vcd");
-        $dumpvars(0, testbench);
-
-        // Test Synchronous Reset
-        #5 reset = 1; // Activate reset
-        #5 reset = 0; // Deactivate reset
-
-        // Generate clock
-        forever #10 clk = ~clk; // Change clock period to reduce output frequency
+    // Blocking assignment logic
+    always_comb begin
+        y = 0;         // Initialize y to 0
+        if (a) begin
+            y = 1;     // If a is high, set y to 1
+        end
+        if (b) begin
+            y = 2;     // If b is high, set y to 2 (overrides previous value)
+        end
     end
 
-    initial begin
-        // Monitor outputs for a limited time
-        $monitor("Time: %0t | Sync Counter: %b | Async Counter: %b", $time, sync_counter_out, async_counter_out);
-        #100; // Run the simulation for a limited time
-        $finish; // End the simulation
+    // Non-blocking assignment logic
+    always_ff @(posedge clk) begin
+        q <= d;         // On rising edge of clk, assign d to q non-blockingly
     end
+
 endmodule
+
+
+// TESTBENCH FILE 
+`timescale 1ns / 1ps
+
+module tb_blocking_nonblocking;
+
+    // Testbench signals
+    logic a;          // Input for blocking logic
+    logic b;          // Input for blocking logic
+    logic clk;        // Clock for non-blocking logic
+    logic d;          // Data for non-blocking logic
+    logic y;          // Output from blocking logic
+    logic q;          // Output from non-blocking logic
+
+    // Instantiate the design module
+    blocking_nonblocking_example dut (
+        .a(a),
+        .b(b),
+        .clk(clk),
+        .d(d),
+        .y(y),
+        .q(q)
+    );
+
+    // Clock generation
+    initial begin
+        clk = 0; // Initialize clock
+        forever #5 clk = ~clk; // Toggle clock every 5 time units
+    end
+
+    // Test procedure
+    initial begin
+        // Initialize VCD dump
+        $dumpfile("dump.vcd");  // Specify the VCD file name
+        $dumpvars(0, tb_blocking_nonblocking); // Dump all variables in this testbench
+
+        // Initialize inputs
+        a = 0; b = 0; d = 0; // Set initial values for a, b, and d
+        #10; // Wait for some time to stabilize
+
+        // Monitor output
+        $monitor("Time: %0t | a: %b | b: %b | y: %b | clk: %b | d: %b | q: %b", 
+                 $time, a, b, y, clk, d, q);
+
+        // Test case 1
+        a = 0; b = 0; d = 0; #10; // Wait 10 time units
+        // Expected: y = 0, q = 0 (undefined initially)
+
+        // Test case 2
+        a = 1; b = 0; d = 1; #10; // Wait 10 time units
+        // Expected: y = 1, q = 0 (remains unchanged until next clock edge)
+
+        // Test case 3
+        a = 0; b = 1; d = 0; #10; // Wait 10 time units
+        // Expected: y = 2, q = 1 (on next clock edge, q will update)
+
+        // Test case 4
+        a = 1; b = 1; d = 1; #10; // Wait 10 time units
+        // Expected: y = 2, q = 0 (on next clock edge, q will update)
+
+        // Test case 5
+        a = 0; b = 0; d = 0; #10; // Wait 10 time units
+        // Expected: y = 0, q = 1 (on next clock edge, q will update)
+
+        // Test case 6: Change d and observe q
+        d = 1; #10; // Wait 10 time units
+        // Expected: y = 0, q = 0 (on next clock edge, q will update)
+
+        // Test case 7: Continue changing inputs
+        a = 1; b = 0; d = 0; #10; // Wait 10 time units
+        // Expected: y = 1, q = 1 (on next clock edge, q will update)
+
+        // Finish simulation
+        $finish;
+    end
+
+endmodule
+
+https://www.edaplayground.com/x/rNNn
