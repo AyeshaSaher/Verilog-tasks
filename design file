@@ -1,0 +1,34 @@
+// Design file 
+// Synchronous Reset Counter & Asynchronous Reset Counter
+// Synchronous Reset Counter
+module sync_counter (
+    input clk,
+    input reset,
+    output reg [2:0] counter
+);
+    always @(posedge clk) begin
+        if (reset)
+            counter <= 0; // Reset to 0 on clock edge
+        else
+            counter <= counter + 1; // Increment counter
+    end
+endmodule
+
+// Asynchronous Reset Counter
+module async_counter (
+    input clk,
+    input reset,
+    output reg [2:0] counter
+);
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            counter <= 0; // Reset immediately
+        else
+            counter <= counter + 1; // Increment counter
+    end
+endmodule
+
+
+
+
+https://www.edaplayground.com/x/GNnp
