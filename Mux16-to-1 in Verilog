@@ -1,0 +1,89 @@
+
+https://www.edaplayground.com/x/BCKh
+
+// Design file in Verilog 
+
+module mux16to1 (
+    input wire [15:0] data,   // 16 inputs
+    input wire [3:0] sel,     // 4 select lines
+    output wire y
+);
+    assign y = (sel == 4'b0000) ? data[0] :
+               (sel == 4'b0001) ? data[1] :
+               (sel == 4'b0010) ? data[2] :
+               (sel == 4'b0011) ? data[3] :
+               (sel == 4'b0100) ? data[4] :
+               (sel == 4'b0101) ? data[5] :
+               (sel == 4'b0110) ? data[6] :
+               (sel == 4'b0111) ? data[7] :
+               (sel == 4'b1000) ? data[8] :
+               (sel == 4'b1001) ? data[9] :
+               (sel == 4'b1010) ? data[10] :
+               (sel == 4'b1011) ? data[11] :
+               (sel == 4'b1100) ? data[12] :
+               (sel == 4'b1101) ? data[13] :
+               (sel == 4'b1110) ? data[14] :
+                                   data[15];  // Default to data[15]
+endmodule
+
+
+module tb_mux16to1;
+    // Declare testbench variables
+    reg [15:0] data;   // 16 inputs
+    reg [3:0] sel;     // 4 select lines
+    wire y;            // Output
+
+    // Instantiate the multiplexer
+    mux16to1 uut (
+        .data(data),
+        .sel(sel),
+        .y(y)
+    );
+
+    // Test sequence
+    initial begin
+        // Display header
+        $display("Time\t data\t\t\t sel\t y");
+        $monitor("%g\t %b\t %b\t %b", $time, data, sel, y);
+        
+        // Test all combinations
+        data = 16'b0000000000000000; sel = 4'b0000; #10; // Expect y = 0
+        data = 16'b0000000000000001; sel = 4'b0001; #10; // Expect y = 1
+        data = 16'b0000000000000010; sel = 4'b0010; #10; // Expect y = 2
+        data = 16'b0000000000000011; sel = 4'b0011; #10; // Expect y = 3
+        data = 16'b0000000000000100; sel = 4'b0100; #10; // Expect y = 4
+        data = 16'b0000000000000101; sel = 4'b0101; #10; // Expect y = 5
+        data = 16'b0000000000000110; sel = 4'b0110; #10; // Expect y = 6
+        data = 16'b0000000000000111; sel = 4'b0111; #10; // Expect y = 7
+        data = 16'b0000000000001000; sel = 4'b1000; #10; // Expect y = 8
+        data = 16'b0000000000001001; sel = 4'b1001; #10; // Expect y = 9
+        data = 16'b0000000000001010; sel = 4'b1010; #10; // Expect y = 10
+        data = 16'b0000000000001011; sel = 4'b1011; #10; // Expect y = 11
+        data = 16'b0000000000001100; sel = 4'b1100; #10; // Expect y = 12
+        data = 16'b0000000000001101; sel = 4'b1101; #10; // Expect y = 13
+        data = 16'b0000000000001110; sel = 4'b1110; #10; // Expect y = 14
+        data = 16'b0000000000001111; sel = 4'b1111; #10; // Expect y = 15
+        
+        // Test with different data values
+        data = 16'b1010101010101010; sel = 4'b0000; #10; // Expect y = 0
+        data = 16'b1010101010101010; sel = 4'b0001; #10; // Expect y = 1
+        data = 16'b1010101010101010; sel = 4'b0010; #10; // Expect y = 2
+        data = 16'b1010101010101010; sel = 4'b0011; #10; // Expect y = 3
+        data = 16'b1010101010101010; sel = 4'b0100; #10; // Expect y = 4
+        data = 16'b1010101010101010; sel = 4'b0101; #10; // Expect y = 5
+        data = 16'b1010101010101010; sel = 4'b0110; #10; // Expect y = 6
+        data = 16'b1010101010101010; sel = 4'b0111; #10; // Expect y = 7
+        data = 16'b1010101010101010; sel = 4'b1000; #10; // Expect y = 8
+        data = 16'b1010101010101010; sel = 4'b1001; #10; // Expect y = 9
+        data = 16'b1010101010101010; sel = 4'b1010; #10; // Expect y = 10
+        data = 16'b1010101010101010; sel = 4'b1011; #10; // Expect y = 11
+        data = 16'b1010101010101010; sel = 4'b1100; #10; // Expect y = 12
+        data = 16'b1010101010101010; sel = 4'b1101; #10; // Expect y = 13
+        data = 16'b1010101010101010; sel = 4'b1110; #10; // Expect y = 14
+        data = 16'b1010101010101010; sel = 4'b1111; #10; // Expect y = 15
+
+        // End simulation
+        $finish;
+    end
+endmodule
+
