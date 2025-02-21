@@ -1,0 +1,54 @@
+
+https://www.edaplayground.com/x/FWYn
+
+// 4-to-1 multiplexer
+// design file 
+
+module mux4to1 (
+    input wire [3:0] data,  // 4 inputs
+    input wire [1:0] sel,    // 2 select lines
+    output wire y
+);
+    assign y = (sel == 2'b00) ? data[0] :
+               (sel == 2'b01) ? data[1] :
+               (sel == 2'b10) ? data[2] :
+                                data[3];  // Default to data[3]
+endmodule
+
+// 4-to-1 mux
+// TESTBENCH FILE 
+module tb_mux4to1;
+    // Declare testbench variables
+    reg [3:0] data;   // 4 inputs
+    reg [1:0] sel;    // 2 select lines
+    wire y;           // Output
+
+    // Instantiate the multiplexer
+    mux4to1 uut (
+        .data(data),
+        .sel(sel),
+        .y(y)
+    );
+
+    // Test sequence
+    initial begin
+        // Display header
+        $display("Time\t data\t sel\t y");
+        $monitor("%g\t %b\t %b\t %b", $time, data, sel, y);
+        
+        // Test all combinations
+        data = 4'b0000; sel = 2'b00; #10; // Expect y = 0
+        data = 4'b0001; sel = 2'b01; #10; // Expect y = 1
+        data = 4'b0010; sel = 2'b10; #10; // Expect y = 2
+        data = 4'b0011; sel = 2'b11; #10; // Expect y = 3
+        
+        // Test with different data values
+        data = 4'b1010; sel = 2'b00; #10; // Expect y = 0
+        data = 4'b1010; sel = 2'b01; #10; // Expect y = 1
+        data = 4'b1010; sel = 2'b10; #10; // Expect y = 0
+        data = 4'b1010; sel = 2'b11; #10; // Expect y = 0
+
+        // End simulation
+        $finish;
+    end
+endmodule
