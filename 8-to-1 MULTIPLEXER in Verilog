@@ -1,0 +1,66 @@
+https://www.edaplayground.com/x/iWV6
+
+// Design file 
+module mux8to1 (
+    input wire [7:0] data,   // 8 inputs
+    input wire [2:0] sel,     // 3 select lines
+    output wire y
+);
+    assign y = (sel == 3'b000) ? data[0] :
+               (sel == 3'b001) ? data[1] :
+               (sel == 3'b010) ? data[2] :
+               (sel == 3'b011) ? data[3] :
+               (sel == 3'b100) ? data[4] :
+               (sel == 3'b101) ? data[5] :
+               (sel == 3'b110) ? data[6] :
+                                 data[7];  // Default to data[7]
+endmodule
+
+
+
+
+// mux 8-to-1
+// TESTBENCH
+module tb_mux8to1;
+    // Declare testbench variables
+    reg [7:0] data;   // 8 inputs
+    reg [2:0] sel;    // 3 select lines
+    wire y;           // Output
+
+    // Instantiate the multiplexer
+    mux8to1 uut (
+        .data(data),
+        .sel(sel),
+        .y(y)
+    );
+
+    // Test sequence
+    initial begin
+        // Display header
+        $display("Time\t data\t\t sel\t y");
+        $monitor("%g\t %b\t %b\t %b", $time, data, sel, y);
+        
+        // Test all combinations
+        data = 8'b00000000; sel = 3'b000; #10; // Expect y = 0
+        data = 8'b00000001; sel = 3'b001; #10; // Expect y = 1
+        data = 8'b00000010; sel = 3'b010; #10; // Expect y = 2
+        data = 8'b00000011; sel = 3'b011; #10; // Expect y = 3
+        data = 8'b00000100; sel = 3'b100; #10; // Expect y = 4
+        data = 8'b00000101; sel = 3'b101; #10; // Expect y = 5
+        data = 8'b00000110; sel = 3'b110; #10; // Expect y = 6
+        data = 8'b00000111; sel = 3'b111; #10; // Expect y = 7
+        
+        // Test with different data values
+        data = 8'b10101010; sel = 3'b000; #10; // Expect y = 0
+        data = 8'b10101010; sel = 3'b001; #10; // Expect y = 1
+        data = 8'b10101010; sel = 3'b010; #10; // Expect y = 0
+        data = 8'b10101010; sel = 3'b011; #10; // Expect y = 1
+        data = 8'b10101010; sel = 3'b100; #10; // Expect y = 0
+        data = 8'b10101010; sel = 3'b101; #10; // Expect y = 1
+        data = 8'b10101010; sel = 3'b110; #10; // Expect y = 0
+        data = 8'b10101010; sel = 3'b111; #10; // Expect y = 1
+
+        // End simulation
+        $finish;
+    end
+endmodule
